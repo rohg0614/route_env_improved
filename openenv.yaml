@@ -1,0 +1,88 @@
+name: Route Dispatch Environment
+description: >
+  An OpenEnv-compliant environment for ride-dispatch route optimization.
+  An agent receives a graph observation and must decide to wait, reposition,
+  or accept a ride to maximize fare collection within a shift.
+version: "1.0.0"
+author: syntaX
+tags:
+  - ride-dispatch
+  - routing
+  - multi-objective
+  - graph
+  - logistics
+  - stochastic-demand
+  - negative-binomial-demand
+  - surge-pricing
+  - sla-constraints
+  - competitive-agents
+  - supply-pressure
+  - non-stationary
+
+observation_space:
+  type: text
+  description: >
+    Named city zones with current_zone (e.g. "Airport", "Downtown"),
+    time of day encoding, shift hours remaining, live demand matrix,
+    supply_pressure (competitor driver density per zone),
+    adjacent_nodes (valid reposition targets), and available rides
+    with fare, wait_time, and destination.
+
+action_space:
+  type: structured
+  actions:
+    - wait
+    - reposition
+    - accept_ride
+  description: >
+    Dispatch decision for the current driver state.
+
+endpoints:
+  health: /health
+  reset:  /reset
+  step:   /step
+  state:  /state
+
+tasks:
+  - id: easy
+    description: >
+      6-zone city core (Airport, Downtown, University, Hospital, Stadium, Suburbs),
+      60-step horizon, relaxed lateness budget (0.45).
+      Airport and Downtown have highest demand weights (2.0x, 1.8x).
+      Suburbs is quietest (0.8x). Any reasonable policy passes the 0.5 threshold.
+    steps: 60
+    ideal_action: "accept high-fare rides, reposition to Airport or Downtown when idle"
+
+  - id: medium
+    description: >
+      8-zone mid-size city (Airport, Downtown, Financial, University, Hospital,
+      Stadium, Suburbs, Mall), 84-step horizon, moderate lateness budget (0.32).
+      Agent must balance ride acceptance with SLA awareness and use
+      supply_pressure to avoid overcrowded zones.
+    steps: 84
+    ideal_action: "accept safe rides, avoid late penalties, reposition to high net-opportunity zones"
+
+  - id: hard
+    description: >
+      12-zone metro area (Airport, Terminal2, Downtown, Financial, Midtown,
+      University, Hospital, Stadium, Convention, Suburbs_N, Suburbs_S, Mall),
+      120-step horizon, tight lateness budget (budget=0.15, threshold=1.5 steps).
+      Pure greedy always-accept scores ~0.36 — well below the 0.5 success threshold.
+      Only an agent that reads wait_time and skips high-latency rides passes.
+      Competitor supply pressure adds spatial reasoning challenge.
+      Use net_opportunity (demand minus supply_pressure) for reposition decisions.
+    steps: 120
+    ideal_action: "skip high-wait rides, use supply_pressure to avoid overcrowded zones"
+
+scoring:
+  reward_range: [0.0, 1.0]
+  success_threshold: 0.5
+  score_formula: >
+    ride_rate_component + fare_rate_component - late_penalty_component,
+    where each component is calibrated per task difficulty (easy/medium/hard).
+    Score is strictly in (0.0, 1.0). See grader.py for exact formula.
+
+constraints:
+  max_runtime_seconds: 1200
+  max_memory_gb: 8
+  max_vcpu: 2

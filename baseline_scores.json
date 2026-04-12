@@ -1,0 +1,15 @@
+{
+  "greedy_scores": {
+    "easy": 0.7264,
+    "medium": 0.6015,
+    "hard": 0.3602666666666667
+  },
+  "sla_aware_scores": {
+    "easy": 0.8247333333333333,
+    "medium": 0.7784666666666666,
+    "hard": 0.7234666666666667
+  },
+  "greedy_overall": 0.5627222222222222,
+  "sla_aware_overall": 0.7755555555555556,
+  "success_threshold": 0.5
+}

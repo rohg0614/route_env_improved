@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables / secrets
+.env
+.env.*
+
+# Logs / tooling outputs
+*.log
+.DS_Store
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# OpenEnv / runtime scratch (safe to ignore)
+.openenv/
+
