@@ -146,7 +146,9 @@ The grader is explicit and deterministic in `grader.py`:
 - input: `step_count`, `completed_rides`, `late_rides`, `total_reward`
 - output: bounded scalar score in `[0.0, 1.0]`
 
-The score is exposed in every observation as `normalized_progress_score`.
+The grader score is computed every step internally and exposed as
+normalized_progress_score in the observation for logging purposes.
+The inference agent does not use this field for decision-making.
 
 ## Determinism and Reproducibility
 

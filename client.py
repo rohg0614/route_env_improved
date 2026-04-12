@@ -26,14 +26,13 @@ class RouteEnv(
     Each client instance has its own dedicated environment session on the server.
 
     Example:
-        >>> # Connect to a running server
-        >>> with RouteEnv(base_url="http://localhost:8000") as client:
-        ...     result = client.reset()
-        ...     print(result.observation.echoed_message)
+        >>> with RouteEnv(base_url="http://localhost:7860") as client:
+        ...     result = client.reset(task_name="easy")
+        ...     print(result.observation.current_zone)
         ...
-        ...     result = client.step(RouteAction(message="Hello!"))
-        ...     print(result.observation.echoed_message)
-
+        ...     result = client.step(RouteAction(action_type="wait"))
+        ...     print(result.observation.available_rides)
+        
     Example with Docker:
         >>> # Automatically start container and connect
         >>> client = RouteEnv.from_docker_image("route_env-env:latest")

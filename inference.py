@@ -196,7 +196,6 @@ def choose_action_with_openllm(
         "driver_status":          str(observation.driver_status),
         "shift_hours_remaining":  round(shift_remaining, 2),
         "shift_pressure":         shift_remaining < 1.5,
-        "normalized_progress":    round(prev_progress, 3),
         "cumulative_reward":      round(cumulative_reward, 3),
         "last_action_error":      observation.last_action_error,
         "safe_rides":             safe_rides,
@@ -438,8 +437,17 @@ def run_episode() -> None:
             run_trajectory(env, trajectory_idx, task_name=task_name)
         except (KeyboardInterrupt, SystemExit):
             raise
-        except Exception as e:
+        except BaseException as e:
+            # run_trajectory's own finally already emitted [END] for normal
+            # Exception subclasses. This broader catch handles rare BaseException
+            # subclasses (e.g. GeneratorExit) that could bypass run_trajectory's
+            # handler without printing [END] — emit a fallback only for those.
             print(f"Task '{task_name}' failed with unhandled exception: {e}", file=sys.stderr)
+            if not isinstance(e, Exception):
+                print(
+                    f"[END] success=false steps=0 score=0.0200 rewards=",
+                    flush=True,
+                )
 
 
 if __name__ == "__main__":

@@ -5,6 +5,10 @@ description: >
   An OpenEnv-compliant environment for ride-dispatch route optimization.
   An agent receives a graph observation and must decide to wait, reposition,
   or accept a ride to maximize fare collection within a shift.
+  Key evaluation property: a greedy always-accept agent scores ~0.36 on the
+  hard task (FAIL) while an SLA-aware agent scores ~0.64 (PASS) — a large,
+  consistent gap directly attributable to reading wait_time and skipping
+  high-latency rides. Pure greedy fails by design.
 version: "1.0.0"
 author: syntaX
 sdk: docker
