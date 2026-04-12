@@ -1,15 +1,10 @@
-name: route_env_improved
-env_id: route-env-v1
-display_name: Route Dispatch Environment
+name: Route Dispatch Environment
 description: >
   An OpenEnv-compliant environment for ride-dispatch route optimization.
   An agent receives a graph observation and must decide to wait, reposition,
   or accept a ride to maximize fare collection within a shift.
 version: "1.0.0"
 author: syntaX
-sdk: docker
-app_port: 7860
-baseline_script: "inference.py"
 tags:
   - ride-dispatch
   - routing
@@ -43,21 +38,10 @@ action_space:
     Dispatch decision for the current driver state.
 
 endpoints:
-  health:
-    method: GET
-    path: /health
-  spec:
-    method: GET
-    path: /spec
-  reset:
-    method: POST
-    path: /reset
-  step:
-    method: POST
-    path: /step
-  state:
-    method: GET
-    path: /state
+  health: /health
+  reset:  /reset
+  step:   /step
+  state:  /state
 
 tasks:
   - id: easy

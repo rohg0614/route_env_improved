@@ -403,9 +403,10 @@ def run_trajectory(
                 f"[START] task={actual_task_name} env=route_env_improved model={model_name}",
                 flush=True,
             )
+        clamped_score = max(0.02, min(0.98, final_score))
         print(
             f"[END] success={'true' if success else 'false'} steps={step_idx} "
-            f"rewards={','.join(raw_rewards)}",
+            f"score={clamped_score:.4f} rewards={','.join(raw_rewards)}",
             flush=True,
         )
 

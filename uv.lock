@@ -1592,7 +1592,6 @@ dependencies = [
     { name = "openai" },
     { name = "openenv-core", extra = ["core"] },
     { name = "python-dotenv" },
-    { name = "pyyaml" },
 ]
 
 [package.optional-dependencies]
@@ -1608,7 +1607,6 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
-    { name = "pyyaml", specifier = ">=6.0" },
 ]
 provides-extras = ["dev"]
 
