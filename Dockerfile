@@ -16,9 +16,6 @@ RUN apt-get update && \
 ARG BUILD_MODE=standalone
 ARG ENV_NAME=route_env
 
-# Copy entire repo root into /app/env
-COPY . /app/env
-
 WORKDIR /app/env
 
 # Ensure uv is available
@@ -28,7 +25,10 @@ RUN if ! command -v uv >/dev/null 2>&1; then \
         mv /root/.local/bin/uvx /usr/local/bin/uvx; \
     fi
 
-# Install dependencies
+# Copy only dependency manifests first — this layer is cached until deps change
+COPY pyproject.toml uv.lock* ./
+
+# Install dependencies (cached unless pyproject.toml or uv.lock changes)
 RUN --mount=type=cache,target=/root/.cache/uv \
     if [ -f uv.lock ]; then \
         uv sync --frozen --no-install-project --no-editable; \
@@ -36,6 +36,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
         uv sync --no-install-project --no-editable; \
     fi
 
+# Copy full source code (this layer changes frequently — kept separate)
+COPY . /app/env
+
+# Install project itself
 RUN --mount=type=cache,target=/root/.cache/uv \
     if [ -f uv.lock ]; then \
         uv sync --frozen --no-editable; \
@@ -56,7 +60,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Repo root is now the package root — all imports resolve from here
 ENV PYTHONPATH="/app/env:$PYTHONPATH"
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=5 \
     CMD curl -f http://localhost:7860/health || exit 1
 
 # Run directly from /app/env — server/app.py is at server/app:app

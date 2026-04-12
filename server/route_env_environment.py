@@ -37,7 +37,7 @@ class RouteEnvironment(Environment):
     2*floor(n/4) hops) giving each node up to 4 neighbours.
     """
 
-    SUPPORTS_CONCURRENT_SESSIONS: bool = True
+    SUPPORTS_CONCURRENT_SESSIONS: bool = False
 
     # Negative Binomial dispersion parameter.
     # r=3 → variance ≈ 2× mean; lower r = burstier demand.
