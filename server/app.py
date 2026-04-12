@@ -14,6 +14,8 @@ Usage:
 import math
 import os
 import time
+import yaml
+import pathlib
 from threading import Lock
 from typing import Optional
 
@@ -148,6 +150,19 @@ def get_leaderboard():
     }
     overall = sorted(snapshot, key=lambda e: -e["score"])[:20]
     return {"by_task": top, "overall_top20": overall, "total_recorded": len(snapshot)}
+
+
+@app.get("/spec")
+@app.get("/web/spec")
+def get_spec():
+    """Return openenv.yaml metadata as JSON — required by openenv validate."""
+    yaml_path = pathlib.Path(__file__).resolve().parent.parent / "openenv.yaml"
+    try:
+        with open(yaml_path, "r") as f:
+            spec_data = yaml.safe_load(f)
+        return spec_data
+    except FileNotFoundError:
+        raise HTTPException(status_code=500, detail="openenv.yaml not found")
 
 
 def main() -> None:
